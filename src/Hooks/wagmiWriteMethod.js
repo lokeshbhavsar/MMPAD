@@ -4,8 +4,8 @@ import { useState } from "react";
 const useWagmiWriteMethod = (abi, contractAddress, funnctionName) => {
   const [hash, setHash] = useState(null);
 
-  const { writeAsync: refetchMethod } = useContractWrite({});
-
+  const { writeAsync: refetchMethod,error:error } = useContractWrite({});
+console.log("errr",error);
   const method = async (params) => {
     console.log(params);
     try {

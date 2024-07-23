@@ -16,6 +16,7 @@ const useWagmiReadMethod = (abi, contractAddress, functionName, params) => {
   const method = async () => {
     try {
       const result = await refetchMethod();
+      console.log(`hey ${functionName} ${params}`,result);
       if (result) {
         const value = new BigNumber(result?.data);
         const dividedValue = value.dividedBy(new BigNumber(10).pow(18));

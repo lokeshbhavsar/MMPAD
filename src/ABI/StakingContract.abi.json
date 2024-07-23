@@ -155,11 +155,45 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "enum Staking.Package",
+        "name": "_stakingPackage",
+        "type": "uint8"
+      },
+      { "internalType": "uint256", "name": "_apr", "type": "uint256" }
+    ],
+    "name": "changeAPR",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       { "internalType": "uint256", "name": "_stakeID", "type": "uint256" }
     ],
     "name": "claimAmount",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_stakeID", "type": "uint256" }
+    ],
+    "name": "getAccumulatedAmount",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_user", "type": "address" }
+    ],
+    "name": "getStakingIDs",
+    "outputs": [
+      { "internalType": "uint256[]", "name": "", "type": "uint256[]" }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -239,20 +273,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      {
-        "internalType": "enum Staking.Package",
-        "name": "_stakingPackage",
-        "type": "uint8"
-      }
-    ],
-    "name": "stake",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "stakeID",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
@@ -264,6 +284,12 @@
     "name": "stakedetails",
     "outputs": [
       { "internalType": "uint256", "name": "stakedAmount", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "totalClaimableAmount",
+        "type": "uint256"
+      },
+      { "internalType": "uint256", "name": "claimedAmount", "type": "uint256" },
       {
         "internalType": "uint256",
         "name": "stakedTimeStamp",
@@ -282,6 +308,16 @@
         "type": "uint8"
       }
     ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "stakingIDs",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
