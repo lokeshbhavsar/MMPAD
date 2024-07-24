@@ -185,7 +185,7 @@ const Stacking = () => {
 
 
 
-
+ 
 
     // Disable conditions for buttons based on input values
     const isButtonDisabled = (index) => {
@@ -234,13 +234,13 @@ const Stacking = () => {
                             <p>Locking Period</p>
                             <p>360 Days</p>
                         </div>
-                        <div className='stack-card-details'>
-                            <input
+                        <div className='stack-card-details2'>
+                        <input
                                 type='text'
                                 value={inputValues[0]}
                                 onChange={handleInputChange(0)}
-                                placeholder={`>= ${100 / usdPrice}`}
-                                title={`>= ${100 / usdPrice}`}
+                                placeholder={`>= ${100/usdPrice}`}
+                                title={`>= ${100/usdPrice}`}
                             />
                         </div>
                         <div className='stack-card-details'>
@@ -250,6 +250,7 @@ const Stacking = () => {
                                         {allowance >= parseFloat(inputValues[0]) ? 'Stake' : 'Approve'}
                                     </button>
                             }
+
                         </div>
                     </div>
                     <svg xmlns="http://www.w3.org/2000/svg" width="730" height="12" viewBox="0 0 830 12" fill="none">
@@ -259,19 +260,29 @@ const Stacking = () => {
                         <div className="progress-bar" style={{ width: '100%' }}></div>
                     </div>
                     <div className='stack-card-3'>
+
                         <div>
                             <div className='Reward-start'>
                                 <h5>Reward Start</h5>
                                 <span>After 100 Days Of Stacking</span>
                             </div>
+
                             <div className='detail-card'>
-                                <div><span>Available: {AmountArray?.[0] ? AmountArray?.[0] : 0}</span></div>
-                                <DropdownComponent StakingIds={StakingIds} />
+                            <div><span>Available:  {AmountArray?.[1] ? AmountArray?.[1] : 0}</span></div>
+                                <div className="dropdown">
+                                    <button className="dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Staking Id
+                                    </button>
+                                    <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <li><a className="dropdown-item" href="#">Fj982645</a></li>
+
+                                    </ul>
+                                </div>
                                 <div><span>Claim</span>
                                 </div>
                             </div>
                         </div>
-                        <button className='mobile-button'>Connect</button>
+                        {/* <button className='mobile-button'>Connect</button> */}
                     </div>
                 </div>
             </div>
@@ -286,13 +297,13 @@ const Stacking = () => {
                             <p>Locking Period</p>
                             <p>360 Days</p>
                         </div>
-                        <div className='stack-card-details'>
-                            <input
+                        <div className='stack-card-details2'>
+                        <input
                                 type='text'
                                 value={inputValues[1]}
                                 onChange={handleInputChange(1)}
-                                placeholder={`>= ${500 / usdPrice}`}
-                                title={`>= ${500 / usdPrice}`}
+                                placeholder={`>= ${500/usdPrice}`}
+                                title={`>= ${500/usdPrice}`}
                             />
                         </div>
                         <div className='stack-card-details'>
@@ -331,7 +342,7 @@ const Stacking = () => {
                                 </div>
                             </div>
                         </div>
-                        <button className='mobile-button'><img src={wallet} alt="" />Connect</button>
+                        {/* <button className='mobile-button'><img src={wallet} alt="" />Connect</button> */}
                     </div>
                 </div>
                 <div className='stack-card01 right-card'>
@@ -358,13 +369,13 @@ const Stacking = () => {
                             <p>Locking Period</p>
                             <p>360 Days</p>
                         </div>
-                        <div className='stack-card-details'>
-                            <input
+                        <div className='stack-card-details2'>
+                        <input
                                 type='text'
                                 value={inputValues[2]}
                                 onChange={handleInputChange(2)}
-                                placeholder={`>= ${1000 / usdPrice}`}
-                                title={`>= ${1000 / usdPrice}`}
+                                placeholder={`>= ${1000/usdPrice}`}
+                                title={`>= ${1000/usdPrice}`}
                             />
                         </div>
                         <div className='stack-card-details'>
@@ -404,11 +415,12 @@ const Stacking = () => {
                                 </div>
                             </div>
                         </div>
-                        <button className='mobile-button'><img src={wallet} alt="" />Connect</button>
+                        {/* <button className='mobile-button'><img src={wallet} alt="" />Connect</button> */}
                     </div>
                 </div>
             </div>
             <LoadingModal isLoading={isLoading} msg={"please wait till the transaction completes"} />
+
         </div>
     );
 }
