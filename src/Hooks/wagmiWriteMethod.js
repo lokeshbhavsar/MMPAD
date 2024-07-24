@@ -5,7 +5,11 @@ const useWagmiWriteMethod = (abi, contractAddress, funnctionName) => {
   const [hash, setHash] = useState(null);
 
   const { writeAsync: refetchMethod,error:error } = useContractWrite({});
-console.log("errr",error);
+  if(error?.message)
+  {
+    alert(error?.message)
+  }
+console.log("errsr",error?.message);
   const method = async (params) => {
     console.log(params);
     try {
