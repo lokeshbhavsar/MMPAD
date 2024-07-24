@@ -14,6 +14,7 @@ const Stack = () => {
       <Stacking/>
       <Steps/>
       <EarnMore/>
+      
       <Footer/>
     </div>
   )

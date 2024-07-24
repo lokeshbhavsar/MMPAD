@@ -14,6 +14,8 @@ import NewsLetter from "./components/dashboard/NewsLetter";
 import IDO from "./components/dashboard/IDO";
 import NewsPage from "./components/dashboard/News/NewsPage";
 import Staking from "./components/Stack"; // Import Staking component
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 const projectId = "c6cc849231f0c9770267752c7251f2b5";
 
@@ -30,6 +32,7 @@ const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
 createWeb3Modal({ wagmiConfig, projectId, chains });
 
 import "./App.css";
+import OurReward from "./components/OurReward";
 
 function App() {
   return (
@@ -71,6 +74,15 @@ function App() {
           <WagmiConfig config={wagmiConfig}>
             <NewsPage />
           </WagmiConfig>
+        }
+      />
+            <Route
+        path="/rewards"
+        element={
+          <WagmiConfig config={wagmiConfig}>
+            <OurReward /> {/* Add the OurReward route */}
+          </WagmiConfig>
+          
         }
       />
     </Routes>
