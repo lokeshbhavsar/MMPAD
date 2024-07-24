@@ -32,6 +32,7 @@ const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
 createWeb3Modal({ wagmiConfig, projectId, chains });
 
 import "./App.css";
+import OurReward from "./components/OurReward";
 
 function App() {
   return (
@@ -73,6 +74,15 @@ function App() {
           <WagmiConfig config={wagmiConfig}>
             <NewsPage />
           </WagmiConfig>
+        }
+      />
+            <Route
+        path="/rewards"
+        element={
+          <WagmiConfig config={wagmiConfig}>
+            <OurReward /> {/* Add the OurReward route */}
+          </WagmiConfig>
+          
         }
       />
     </Routes>

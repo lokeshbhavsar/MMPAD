@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Stacking.css';
 import wallet from '../assets/Images/ion_wallet.svg';
 import golden from '../assets/Images/golden-tier 1.png';
@@ -37,6 +38,11 @@ const Stacking = () => {
     const { method: readStakingMethod } = wagmiReadMethodNonInt(StakingContractAbi, STAKING_TOKEN_ADDRESS, "getStakingIDs", [address], false);
     const { method: readAmountMethod } = useWagmiReadMethod(StakingContractAbi, STAKING_TOKEN_ADDRESS, "getAccumulatedAmount", [accumulateId]);
     console.log("AmountArray", AmountArray);
+    const navigate = useNavigate();
+
+    const handleReferralRewardsClick = () => {
+      navigate('/rewards');
+    };
     useEffect(() => {
         const readAccumulateData = async () => {
             try {
@@ -268,16 +274,8 @@ const Stacking = () => {
                             </div>
 
                             <div className='detail-card'>
-                            <div><span>Available:  {AmountArray?.[1] ? AmountArray?.[1] : 0}</span></div>
-                                <div className="dropdown">
-                                    <button className="dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Staking Id
-                                    </button>
-                                    <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <li><a className="dropdown-item" href="#">Fj982645</a></li>
-
-                                    </ul>
-                                </div>
+                                <div><span>Available: {AmountArray?.[0] ? AmountArray?.[0] : 0}</span></div>
+                                <DropdownComponent StakingIds={StakingIds} />
                                 <div><span>Claim</span>
                                 </div>
                             </div>
@@ -419,6 +417,10 @@ const Stacking = () => {
                     </div>
                 </div>
             </div>
+            <div className='reward-btn'>
+            <button onClick={handleReferralRewardsClick}>Referral Rewards</button>
+            </div>
+            
             <LoadingModal isLoading={isLoading} msg={"please wait till the transaction completes"} />
 
         </div>
