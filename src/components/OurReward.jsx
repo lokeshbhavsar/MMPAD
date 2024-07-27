@@ -1,14 +1,39 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './OurReward.css'
 import rewardImage from '../assets/Images/rewards.gif';
 import rewardsImage from '../assets/Images/reward.gif';
 import champImage from '../assets/Images/champ.gif';
 import Navbar from './header/Navbar';
 import Footer from './Footer';
-import { useLocation } from 'react-router-dom';
+import {  useLocation, useNavigate } from 'react-router-dom';
+import { useAccount } from 'wagmi';
+import  StakingContractAbi from "../ABI/StakingContract.abi.json"
+import useWagmiWriteMethod from '../Hooks/wagmiWriteMethod';
 const OurReward = () => {
-  const URL =useLocation()
-  console.log("url",URL);
+  const {address} = useAccount()
+  const zeroAddress = "0x0000000000000000000000000000000000000000"
+  const MMT_TOKEN_ADDRESS = "0xcF0d61Cbd5Dc16cb7dCf36D80630e633D1f9A0Ee";
+  const STAKING_TOKEN_ADDRESS = "0xE076bbdFbA03b0F9E06b02A5e24eb79568100BBA";
+  const [tnxHash, setTnxHash] = useState("")
+  
+  const { method: referralClaimMethod, hash: referralClaimHash } = useWagmiWriteMethod(StakingContractAbi, STAKING_TOKEN_ADDRESS, "referralClaim");
+
+  const handleReferralClaim = async () => {
+    const txHash = await referralClaimMethod([]);
+    setTnxHash(txHash)
+    console.log('Transaction Hash:', txHash);
+};
+
+  const handleCopyLink = () => {
+    const link = `${window.location.origin}/staking/${address}`;
+    navigator.clipboard.writeText(link).then(() => {
+      alert('Link copied to clipboard!');
+    }, (err) => {
+      console.error('Failed to copy the link: ', err);
+    });
+  };
+
+
   return (
     <div className='ourReward'>
         <Navbar/>
@@ -25,7 +50,7 @@ const OurReward = () => {
             <h4>Available Rewards</h4>
             <h5>45</h5>
             <p>Claim your rewards now</p>
-            <span>Claim your Rewards</span>
+            <span style={{cursor:"pointer"}} onClick={handleReferralClaim}>Claim your Rewards</span>
         </div>
         <div className='reward-card2 reward-card'>
             <img src={champImage}/>
@@ -37,7 +62,12 @@ const OurReward = () => {
       </div>
       
       <div className='reward-table'>
+      
+
+        <h2 style={{ cursor: 'pointer' }} onClick={handleCopyLink}><span>COPY YOUR REFERRAL CODE</span> </h2>
+        <br/>
         <h2><span>MMIT’s</span> Referral Incentives</h2>
+
         <div className='level-btn'>
         <div class="dropdown drop">
   <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
