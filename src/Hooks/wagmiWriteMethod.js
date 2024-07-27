@@ -1,13 +1,20 @@
 import { useContractWrite } from "wagmi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const useWagmiWriteMethod = (abi, contractAddress, funnctionName) => {
   const [hash, setHash] = useState(null);
 
   const { writeAsync: refetchMethod,error:error } = useContractWrite({});
-console.log("errr",error);
+  useEffect(()=>{
+    if(error?.message)
+      {
+        alert(error?.message)
+      }
+  },[error?.message])
+
+console.log("errsr",error?.message);
   const method = async (params) => {
-    console.log(params);
+    console.log("params",params);
     try {
       const result = await refetchMethod({
         abi: abi,

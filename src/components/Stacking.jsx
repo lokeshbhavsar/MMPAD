@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import './Stacking.css';
 import wallet from '../assets/Images/ion_wallet.svg';
 import golden from '../assets/Images/golden-tier 1.png';
@@ -14,13 +14,15 @@ import axios from 'axios';
 import wagmiReadMethodNonInt, { BigIntArrayConverter } from '../Hooks/wagmiReadMethodNonInt';
 import DropdownComponent from './DropdownComponent';
 import { isAddress } from 'viem';
+import { shortenAddress } from '../Utils/HelperFunctions';
 
 const Stacking = () => {
+    const { referralId } = useParams()
     const { address } = useAccount();
     const { open, close } = useWeb3Modal()
     const zeroAddress = "0x0000000000000000000000000000000000000000"
     const MMT_TOKEN_ADDRESS = "0xcF0d61Cbd5Dc16cb7dCf36D80630e633D1f9A0Ee";
-    const STAKING_TOKEN_ADDRESS = "0x2530D75FA01b575e279EC4FC778fdB59A0266840";
+    const STAKING_TOKEN_ADDRESS = "0xE076bbdFbA03b0F9E06b02A5e24eb79568100BBA";
     const [allowance, setAllowance] = useState(0);
     const [inputValues, setInputValues] = useState(['', '', '']);
     const [tnxHash, setTnxHash] = useState("")
@@ -30,19 +32,51 @@ const Stacking = () => {
     })
     const [accumulateId, setAccumulateId] = useState(0)
     const [AmountArray, setAmountArray] = useState({})
+    const [PackageArrays, setPackageArrays] = useState([[], [], []])
+
     const [StakingIds, setStakingIds] = useState([])
-    const [referralAddress, setReferralAddress] = useState({})
+    const [referralAddress, setReferralAddress] = useState(referralId?referralId:zeroAddress)
+    const [selectedId, setSelectedId] = useState({ "0": null, "1": null, "2": null })
     const { method: readAllowanceMethod } = useWagmiReadMethod(tokenAbi, MMT_TOKEN_ADDRESS, "allowance", [address, STAKING_TOKEN_ADDRESS]);
-    const { method: approveMethod, hash: approveTxHash } = useWagmiWriteMethod(tokenAbi, MMT_TOKEN_ADDRESS, "approve");
-    const { method: stakeMethod, hash: stakeHash } = useWagmiWriteMethod(StakingContractAbi, STAKING_TOKEN_ADDRESS, "referralStake");
     const { method: readStakingMethod } = wagmiReadMethodNonInt(StakingContractAbi, STAKING_TOKEN_ADDRESS, "getStakingIDs", [address], false);
     const { method: readAmountMethod } = useWagmiReadMethod(StakingContractAbi, STAKING_TOKEN_ADDRESS, "getAccumulatedAmount", [accumulateId]);
-    console.log("AmountArray", AmountArray);
+    const { method: readPackageArrayMethod0 } = wagmiReadMethodNonInt(StakingContractAbi, STAKING_TOKEN_ADDRESS, "getpackageStakingIds", [address, 0], false);
+    const { method: readPackageArrayMethod1 } = wagmiReadMethodNonInt(StakingContractAbi, STAKING_TOKEN_ADDRESS, "getpackageStakingIds", [address, 1], false);
+    const { method: readPackageArrayMethod2 } = wagmiReadMethodNonInt(StakingContractAbi, STAKING_TOKEN_ADDRESS, "getpackageStakingIds", [address, 2], false);
+    const { method: approveMethod, hash: approveTxHash } = useWagmiWriteMethod(tokenAbi, MMT_TOKEN_ADDRESS, "approve");
+    const { method: stakeMethod, hash: stakeHash } = useWagmiWriteMethod(StakingContractAbi, STAKING_TOKEN_ADDRESS, "referralStake");
+    const { method: claimAmountMethod, hash: clameAmountHash } = useWagmiWriteMethod(StakingContractAbi, STAKING_TOKEN_ADDRESS, "claimAmount");
+
+    console.log("PackageArrays", PackageArrays);
     const navigate = useNavigate();
 
     const handleReferralRewardsClick = () => {
-      navigate('/rewards');
+        navigate('/rewards');
     };
+
+    console.log("AmountArray", AmountArray);
+    useEffect(() => {
+        const readStkingIdsPackage = async () => {
+            try {
+                const package1Data = BigIntArrayConverter(await readPackageArrayMethod0())
+                const package2Data = BigIntArrayConverter(await readPackageArrayMethod1())
+                const package3Data = BigIntArrayConverter(await readPackageArrayMethod2())
+                PackageArrays[0] = package1Data
+                PackageArrays[1] = package2Data
+                PackageArrays[2] = package3Data
+                setPackageArrays(PackageArrays)
+
+                console.log("ssccaa", package1Data, package2Data, package3Data);
+            } catch (error) {
+                console.log("Error in readStkingIdsPackage:", error);
+            }
+        };
+        if (address) {
+            readStkingIdsPackage();
+        }
+    }, [address, isSuccess])
+
+
     useEffect(() => {
         const readAccumulateData = async () => {
             try {
@@ -82,6 +116,7 @@ const Stacking = () => {
         fetchCoinData();
     }, []);
     console.log("usdPrice", usdPrice);
+
     const handleApprove = async (approveAmountValue) => {
         const txHash = await approveMethod([STAKING_TOKEN_ADDRESS, approveAmountValue]);
         setTnxHash(txHash)
@@ -89,7 +124,14 @@ const Stacking = () => {
     };
 
     const handleStaking = async (stakeAmountValue, packageIndex) => {
-        const txHash = await stakeMethod([stakeAmountValue, packageIndex, "0x0000000000000000000000000000000000000000"]);
+        const txHash = await stakeMethod([stakeAmountValue, packageIndex, referralAddress]);
+        setTnxHash(txHash)
+        console.log('Transaction Hash:', txHash);
+    };
+
+    const handleClaimAmount = async (packageIde) => {
+        console.log("sdaa", packageIde);
+        const txHash = await claimAmountMethod([packageIde]);
         setTnxHash(txHash)
         console.log('Transaction Hash:', txHash);
     };
@@ -191,7 +233,7 @@ const Stacking = () => {
 
 
 
- 
+
 
     // Disable conditions for buttons based on input values
     const isButtonDisabled = (index) => {
@@ -220,7 +262,7 @@ const Stacking = () => {
             <h2><span>MMIT’s</span> Staking</h2>
             <div >
 
-                <input placeholder='Referral Address' onChange={e => setReferralAddress(e.target.value)}></input>
+                <input placeholder='Referral Address' value={shortenAddress(referralAddress)} onChange={e => setReferralAddress(e.target.value)}></input>
             </div>
 
             <div className='stack-card'>
@@ -241,12 +283,12 @@ const Stacking = () => {
                             <p>360 Days</p>
                         </div>
                         <div className='stack-card-details2'>
-                        <input
+                            <input
                                 type='text'
                                 value={inputValues[0]}
                                 onChange={handleInputChange(0)}
-                                placeholder={`>= ${100/usdPrice}`}
-                                title={`>= ${100/usdPrice}`}
+                                placeholder={`>= ${100 / usdPrice}`}
+                                title={`>= ${100 / usdPrice}`}
                             />
                         </div>
                         <div className='stack-card-details'>
@@ -275,8 +317,8 @@ const Stacking = () => {
 
                             <div className='detail-card'>
                                 <div><span>Available: {AmountArray?.[0] ? AmountArray?.[0] : 0}</span></div>
-                                <DropdownComponent StakingIds={StakingIds} />
-                                <div><span>Claim</span>
+                                <DropdownComponent step={0} selectedId={selectedId} setSelectedId={setSelectedId} StakingIds={PackageArrays?.[0]} />
+                                <div><span onClick={() => { handleClaimAmount(selectedId["0"]) }}>Claim</span>
                                 </div>
                             </div>
                         </div>
@@ -296,12 +338,12 @@ const Stacking = () => {
                             <p>360 Days</p>
                         </div>
                         <div className='stack-card-details2'>
-                        <input
+                            <input
                                 type='text'
                                 value={inputValues[1]}
                                 onChange={handleInputChange(1)}
-                                placeholder={`>= ${500/usdPrice}`}
-                                title={`>= ${500/usdPrice}`}
+                                placeholder={`>= ${500 / usdPrice}`}
+                                title={`>= ${500 / usdPrice}`}
                             />
                         </div>
                         <div className='stack-card-details'>
@@ -326,17 +368,9 @@ const Stacking = () => {
                             </div>
 
                             <div className='detail-card'>
-                                <div><span>Available:  {AmountArray?.[1] ? AmountArray?.[1] : 0}</span></div>
-                                <div className="dropdown">
-                                    <button className="dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Staking Id
-                                    </button>
-                                    <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <li><a className="dropdown-item" href="#">Fj982645</a></li>
-
-                                    </ul>
-                                </div>
-                                <div><span>Claim</span>
+                                <div><span>Available: {AmountArray?.[1] ? AmountArray?.[1] : 0}</span></div>
+                                <DropdownComponent step={1} selectedId={selectedId} setSelectedId={setSelectedId} StakingIds={PackageArrays?.[1]} />
+                                <div><span onClick={() => { handleClaimAmount(selectedId["0"]) }}>Claim</span>
                                 </div>
                             </div>
                         </div>
@@ -368,12 +402,12 @@ const Stacking = () => {
                             <p>360 Days</p>
                         </div>
                         <div className='stack-card-details2'>
-                        <input
+                            <input
                                 type='text'
                                 value={inputValues[2]}
                                 onChange={handleInputChange(2)}
-                                placeholder={`>= ${1000/usdPrice}`}
-                                title={`>= ${1000/usdPrice}`}
+                                placeholder={`>= ${1000 / usdPrice}`}
+                                title={`>= ${1000 / usdPrice}`}
                             />
                         </div>
                         <div className='stack-card-details'>
@@ -399,17 +433,9 @@ const Stacking = () => {
                             </div>
 
                             <div className='detail-card'>
-                                <div><span>Available:  {AmountArray?.[2] ? AmountArray?.[2] : 0}</span></div>
-                                <div className="dropdown">
-                                    <button className="dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Staking Id
-                                    </button>
-                                    <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <li><a className="dropdown-item" href="#">Fj982645</a></li>
-
-                                    </ul>
-                                </div>
-                                <div><span>Claim</span>
+                                <div><span>Available: {AmountArray?.[2] ? AmountArray?.[2] : 0}</span></div>
+                                <DropdownComponent step={2} selectedId={selectedId} setSelectedId={setSelectedId} StakingIds={PackageArrays?.[2]} />
+                                <div><span onClick={() => { handleClaimAmount(selectedId["0"]) }}>Claim</span>
                                 </div>
                             </div>
                         </div>
@@ -418,9 +444,9 @@ const Stacking = () => {
                 </div>
             </div>
             <div className='reward-btn'>
-            <button onClick={handleReferralRewardsClick}>Referral Rewards</button>
+                <button onClick={handleReferralRewardsClick}>Referral Rewards</button>
             </div>
-            
+
             <LoadingModal isLoading={isLoading} msg={"please wait till the transaction completes"} />
 
         </div>
