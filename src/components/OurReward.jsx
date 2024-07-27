@@ -5,7 +5,10 @@ import rewardsImage from '../assets/Images/reward.gif';
 import champImage from '../assets/Images/champ.gif';
 import Navbar from './header/Navbar';
 import Footer from './Footer';
+import { useLocation } from 'react-router-dom';
 const OurReward = () => {
+  const URL =useLocation()
+  console.log("url",URL);
   return (
     <div className='ourReward'>
         <Navbar/>

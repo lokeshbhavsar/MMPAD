@@ -61,7 +61,7 @@ function App() {
         }
       /> */}
       <Route
-        path="/"
+        path="/:referralId?"
         element={
           <WagmiConfig config={wagmiConfig}>
             <Staking /> {/* Add the Staking route */}

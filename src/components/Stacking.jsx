@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import './Stacking.css';
 import wallet from '../assets/Images/ion_wallet.svg';
 import golden from '../assets/Images/golden-tier 1.png';
@@ -14,8 +14,10 @@ import axios from 'axios';
 import wagmiReadMethodNonInt, { BigIntArrayConverter } from '../Hooks/wagmiReadMethodNonInt';
 import DropdownComponent from './DropdownComponent';
 import { isAddress } from 'viem';
+import { shortenAddress } from '../Utils/HelperFunctions';
 
 const Stacking = () => {
+    const { referralId } = useParams()
     const { address } = useAccount();
     const { open, close } = useWeb3Modal()
     const zeroAddress = "0x0000000000000000000000000000000000000000"
@@ -33,8 +35,8 @@ const Stacking = () => {
     const [PackageArrays, setPackageArrays] = useState([[], [], []])
 
     const [StakingIds, setStakingIds] = useState([])
-    const [referralAddress, setReferralAddress] = useState({})
-    const [selectedId,setSelectedId] = useState({"0":null,"1":null,"2":null})
+    const [referralAddress, setReferralAddress] = useState(referralId?referralId:zeroAddress)
+    const [selectedId, setSelectedId] = useState({ "0": null, "1": null, "2": null })
     const { method: readAllowanceMethod } = useWagmiReadMethod(tokenAbi, MMT_TOKEN_ADDRESS, "allowance", [address, STAKING_TOKEN_ADDRESS]);
     const { method: readStakingMethod } = wagmiReadMethodNonInt(StakingContractAbi, STAKING_TOKEN_ADDRESS, "getStakingIDs", [address], false);
     const { method: readAmountMethod } = useWagmiReadMethod(StakingContractAbi, STAKING_TOKEN_ADDRESS, "getAccumulatedAmount", [accumulateId]);
@@ -52,7 +54,7 @@ const Stacking = () => {
         navigate('/rewards');
     };
 
-console.log("AmountArray",AmountArray);
+    console.log("AmountArray", AmountArray);
     useEffect(() => {
         const readStkingIdsPackage = async () => {
             try {
@@ -122,13 +124,13 @@ console.log("AmountArray",AmountArray);
     };
 
     const handleStaking = async (stakeAmountValue, packageIndex) => {
-        const txHash = await stakeMethod([stakeAmountValue, packageIndex, "0x0000000000000000000000000000000000000000"]);
+        const txHash = await stakeMethod([stakeAmountValue, packageIndex, referralAddress]);
         setTnxHash(txHash)
         console.log('Transaction Hash:', txHash);
     };
 
     const handleClaimAmount = async (packageIde) => {
-        console.log("sdaa",packageIde);
+        console.log("sdaa", packageIde);
         const txHash = await claimAmountMethod([packageIde]);
         setTnxHash(txHash)
         console.log('Transaction Hash:', txHash);
@@ -260,7 +262,7 @@ console.log("AmountArray",AmountArray);
             <h2><span>MMIT’s</span> Staking</h2>
             <div >
 
-                <input placeholder='Referral Address' onChange={e => setReferralAddress(e.target.value)}></input>
+                <input placeholder='Referral Address' value={shortenAddress(referralAddress)} onChange={e => setReferralAddress(e.target.value)}></input>
             </div>
 
             <div className='stack-card'>
@@ -316,7 +318,7 @@ console.log("AmountArray",AmountArray);
                             <div className='detail-card'>
                                 <div><span>Available: {AmountArray?.[0] ? AmountArray?.[0] : 0}</span></div>
                                 <DropdownComponent step={0} selectedId={selectedId} setSelectedId={setSelectedId} StakingIds={PackageArrays?.[0]} />
-                                <div><span onClick={()=>{handleClaimAmount(selectedId["0"])}}>Claim</span>
+                                <div><span onClick={() => { handleClaimAmount(selectedId["0"]) }}>Claim</span>
                                 </div>
                             </div>
                         </div>
@@ -368,7 +370,7 @@ console.log("AmountArray",AmountArray);
                             <div className='detail-card'>
                                 <div><span>Available: {AmountArray?.[1] ? AmountArray?.[1] : 0}</span></div>
                                 <DropdownComponent step={1} selectedId={selectedId} setSelectedId={setSelectedId} StakingIds={PackageArrays?.[1]} />
-                                <div><span onClick={()=>{handleClaimAmount(selectedId["0"])}}>Claim</span>
+                                <div><span onClick={() => { handleClaimAmount(selectedId["0"]) }}>Claim</span>
                                 </div>
                             </div>
                         </div>
@@ -433,7 +435,7 @@ console.log("AmountArray",AmountArray);
                             <div className='detail-card'>
                                 <div><span>Available: {AmountArray?.[2] ? AmountArray?.[2] : 0}</span></div>
                                 <DropdownComponent step={2} selectedId={selectedId} setSelectedId={setSelectedId} StakingIds={PackageArrays?.[2]} />
-                                <div><span onClick={()=>{handleClaimAmount(selectedId["0"])}}>Claim</span>
+                                <div><span onClick={() => { handleClaimAmount(selectedId["0"]) }}>Claim</span>
                                 </div>
                             </div>
                         </div>
