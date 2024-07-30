@@ -22,7 +22,7 @@ const Stacking = () => {
     const { open, close } = useWeb3Modal()
     const zeroAddress = "0x0000000000000000000000000000000000000000"
     const MMT_TOKEN_ADDRESS = "0xcF0d61Cbd5Dc16cb7dCf36D80630e633D1f9A0Ee";
-    const STAKING_TOKEN_ADDRESS = "0xE076bbdFbA03b0F9E06b02A5e24eb79568100BBA";
+    const STAKING_TOKEN_ADDRESS = "0x24a732977B17ccCd57cF3B988F4eEbd2B8565b99";
     const [allowance, setAllowance] = useState(0);
     const [inputValues, setInputValues] = useState(['', '', '']);
     const [tnxHash, setTnxHash] = useState("")
