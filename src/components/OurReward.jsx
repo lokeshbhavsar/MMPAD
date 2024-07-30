@@ -13,8 +13,17 @@ import wagmiReadMethodNonInt from '../Hooks/wagmiReadMethodNonInt';
 const OurReward = () => {
   const { address } = useAccount()
   const [teamCount, setTeamCount] = useState(0)
-  const [referrerClaimAmountMethodState,setReferrerClaimAmountMethodState] = useState(0)
-  const [referrerClaimedAmountMethodState,setReferrerClaimedAmountMethodState] = useState(0)
+  const [referrerClaimAmountMethodState, setReferrerClaimAmountMethodState] = useState(0)
+  const [referrerClaimedAmountMethodState, setReferrerClaimedAmountMethodState] = useState(0)
+
+  const [level1, setLevel1] = useState([])
+  const [level2, setLevel2] = useState([])
+  const [level3, setLevel3] = useState([])
+  const [levelCurrent, setlevelCurrent] = useState([])
+
+
+
+
 
   const zeroAddress = "0x0000000000000000000000000000000000000000"
   const MMT_TOKEN_ADDRESS = "0xcF0d61Cbd5Dc16cb7dCf36D80630e633D1f9A0Ee";
@@ -22,29 +31,47 @@ const OurReward = () => {
   const [tnxHash, setTnxHash] = useState("")
   const { isError, isLoading, isSuccess } = useWaitForTransaction({
     hash: tnxHash,
-})
+  })
 
   const { method: referralClaimMethod, hash: referralClaimHash } = useWagmiWriteMethod(StakingContractAbi, STAKING_TOKEN_ADDRESS, "referralClaim");
   const { method: getTotalreferralMethod } = wagmiReadMethodNonInt(StakingContractAbi, STAKING_TOKEN_ADDRESS, "getTotalreferralCount", [address], false);
   const { method: referrerClaimAmountMethod } = wagmiReadMethodNonInt(StakingContractAbi, STAKING_TOKEN_ADDRESS, "referrerClaimAmount", [address], false);
   const { method: referrerClaimedAmounttMethod } = wagmiReadMethodNonInt(StakingContractAbi, STAKING_TOKEN_ADDRESS, "referrerClaimedAmount", [address], false);
-  
-  
-  console.log("count", referrerClaimedAmountMethodState);
+
+  const { method: getTotalLevelreferralMethod1 } = wagmiReadMethodNonInt(StakingContractAbi, STAKING_TOKEN_ADDRESS, "getTotalLevelreferral", [address, 1], false);
+  const { method: getTotalLevelreferralMethod2 } = wagmiReadMethodNonInt(StakingContractAbi, STAKING_TOKEN_ADDRESS, "getTotalLevelreferral", [address, 2], false);
+  const { method: getTotalLevelreferralMethod3 } = wagmiReadMethodNonInt(StakingContractAbi, STAKING_TOKEN_ADDRESS, "getTotalLevelreferral", [address, 3], false);
+
+
+
+
+
+  console.log("count", levelCurrent);
   useEffect(() => {
     const handletTotalreferralMethod = async (approveAmountValue) => {
       const result = await getTotalreferralMethod();
-      const result2 = await  referrerClaimAmountMethod()
-      const result3 = await  referrerClaimedAmounttMethod()
+      const result2 = await referrerClaimAmountMethod()
+      const result3 = await referrerClaimedAmounttMethod()
+
+      const result4 = await getTotalLevelreferralMethod1()
+      const result5 = await getTotalLevelreferralMethod2()
+      const result6 = await getTotalLevelreferralMethod3()
+
 
       setTeamCount(Number(result))
       setReferrerClaimAmountMethodState(Number(result2))
       setReferrerClaimedAmountMethodState(Number(result3))
 
+      setLevel1(result4)
+      setLevel2(result5)
+      setLevel3(result6)
+
+      setlevelCurrent([...result4, ...result5, ...result6])
+
       console.log("result", result2);
     };
     handletTotalreferralMethod()
-  }, [address,isSuccess])
+  }, [address, isSuccess])
 
 
   const handleReferralClaim = async () => {
@@ -62,6 +89,21 @@ const OurReward = () => {
     });
   };
 
+  const handleClicke = (e) => {
+    console.log("sss", e);
+    if (e == 0) {
+      setlevelCurrent([...level1, ...level2, ...level3])
+    }
+    if (e == 1) {
+      setlevelCurrent([...level1])
+    }
+    if (e == 2) {
+      setlevelCurrent([...level2])
+    }
+    if (e == 3) {
+      setlevelCurrent([...level3])
+    }
+  }
 
   return (
     <div className='ourReward'>
@@ -77,7 +119,7 @@ const OurReward = () => {
         <div className='reward-card1 reward-card'>
           <img src={rewardsImage} />
           <h4>Available Rewards</h4>
-          <h5>{referrerClaimAmountMethodState/10**18}</h5>
+          <h5>{referrerClaimAmountMethodState / 10 ** 18}</h5>
           <p>Claim your rewards now</p>
           <span style={{ cursor: "pointer" }} onClick={handleReferralClaim}>Claim your Rewards</span>
         </div>
@@ -112,9 +154,10 @@ const OurReward = () => {
               </svg> Level
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              <li><a class="dropdown-item" href="#">All Levels</a></li>
-              <li><a class="dropdown-item" href="#">Level 1</a></li>
-              <li><a class="dropdown-item" href="#">Level 2</a></li>
+              <li onClick={() => handleClicke(0)}><a class="dropdown-item" href="#">All Levels</a></li>
+              <li onClick={() => handleClicke(1)}><a class="dropdown-item" href="#">Level 1</a></li>
+              <li onClick={() => handleClicke(2)}><a class="dropdown-item" href="#">Level 2</a></li>
+              <li onClick={() => handleClicke(3)}><a class="dropdown-item" href="#">Level 3</a></li>
             </ul>
           </div>
         </div>
@@ -129,30 +172,19 @@ const OurReward = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>0x20B8179f9b05F140586Ba18D6Adf9017Ba29A45B</td>
-                <td>$67,789</td>
-                <td><span>Level-1</span></td>
-              </tr>
-              <tr>
-                <th scope="row">2</th>
-                <td>0x20B8179f9b05F140586Ba18D6Adf9017Ba29A45B</td>
-                <td>$67,789</td>
-                <td><span>Level-2</span></td>
-              </tr>
-              <tr>
-                <th scope="row">3</th>
-                <td>0x20B8179f9b05F140586Ba18D6Adf9017Ba29A45B</td>
-                <td>$67,789</td>
-                <td><span>Level-3</span></td>
-              </tr>
-              <tr>
-                <th scope="row">4</th>
-                <td>0x20B8179f9b05F140586Ba18D6Adf9017Ba29A45B</td>
-                <td>$67,789</td>
-                <td><span>Level-4</span></td>
-              </tr>
+{
+  levelCurrent?.map((el,i)=>{
+    return(
+      <tr>
+      <th scope="row">{i+1}</th>
+      <td>{el}</td>
+      <td>$67,789</td>
+      <td><span>Level-1</span></td>
+    </tr>
+    )
+  })
+}
+          
             </tbody>
           </table>
         </div>
