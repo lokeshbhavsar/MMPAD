@@ -12,7 +12,7 @@ const useWagmiWriteMethod = (abi, contractAddress, funnctionName) => {
       }
   },[error?.message])
 
-console.log("errsr",error?.message);
+console.log("errsr",error?.name);
   const method = async (params) => {
     console.log("params",params);
     try {

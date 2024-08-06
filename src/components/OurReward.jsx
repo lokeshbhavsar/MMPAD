@@ -27,7 +27,7 @@ const OurReward = () => {
 
   const zeroAddress = "0x0000000000000000000000000000000000000000"
   const MMT_TOKEN_ADDRESS = "0xcF0d61Cbd5Dc16cb7dCf36D80630e633D1f9A0Ee";
-  const STAKING_TOKEN_ADDRESS = "0x24a732977B17ccCd57cF3B988F4eEbd2B8565b99";
+  const STAKING_TOKEN_ADDRESS = "0xAceD5F8540692bE0929fd6e43b25eB0377829b81";
   const [tnxHash, setTnxHash] = useState("")
   const { isError, isLoading, isSuccess } = useWaitForTransaction({
     hash: tnxHash,
@@ -88,8 +88,10 @@ const OurReward = () => {
       console.error('Failed to copy the link: ', err);
     });
   };
-
+  const [myLevel,setMyLevel] = useState("All")
+console.log("levelCurrent",levelCurrent);
   const handleClicke = (e) => {
+    setMyLevel(e==0?"All":e)
     console.log("sss", e);
     if (e == 0) {
       setlevelCurrent([...level1, ...level2, ...level3])
@@ -119,7 +121,7 @@ const OurReward = () => {
         <div className='reward-card1 reward-card'>
           <img src={rewardsImage} />
           <h4>Available Rewards</h4>
-          <h5>{referrerClaimAmountMethodState / 10 ** 18}</h5>
+          <h5> {  Math.round(referrerClaimAmountMethodState / 10 ** 18)}</h5>
           <p>Claim your rewards now</p>
           <span style={{ cursor: "pointer" }} onClick={handleReferralClaim}>Claim your Rewards</span>
         </div>
@@ -151,7 +153,7 @@ const OurReward = () => {
                     <rect width="20.625" height="22" fill="white" transform="translate(0.237549 0.340088)" />
                   </clipPath>
                 </defs>
-              </svg> Level
+              </svg> Level {myLevel}
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
               <li onClick={() => handleClicke(0)}><a class="dropdown-item" href="#">All Levels</a></li>
@@ -177,9 +179,9 @@ const OurReward = () => {
     return(
       <tr>
       <th scope="row">{i+1}</th>
-      <td>{el}</td>
-      <td>$67,789</td>
-      <td><span>Level-1</span></td>
+      <td>{el?.staker}</td>
+      <td>$ {Number(el?.amount)/10**18}</td>
+      <td><span>Level-{myLevel}</span></td>
     </tr>
     )
   })

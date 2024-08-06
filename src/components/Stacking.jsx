@@ -22,7 +22,7 @@ const Stacking = () => {
     const { open, close } = useWeb3Modal()
     const zeroAddress = "0x0000000000000000000000000000000000000000"
     const MMT_TOKEN_ADDRESS = "0xcF0d61Cbd5Dc16cb7dCf36D80630e633D1f9A0Ee";
-    const STAKING_TOKEN_ADDRESS = "0x24a732977B17ccCd57cF3B988F4eEbd2B8565b99";
+    const STAKING_TOKEN_ADDRESS = "0xAceD5F8540692bE0929fd6e43b25eB0377829b81";
     const [allowance, setAllowance] = useState(0);
     const [inputValues, setInputValues] = useState(['', '', '']);
     const [tnxHash, setTnxHash] = useState("")
@@ -254,7 +254,7 @@ const Stacking = () => {
     };
 
     useEffect(() => {
-        isAddress(referralAddress) ? setReferralAddress(referralAddress) : setReferralAddress(zeroAddress)
+        // isAddress(referralAddress) ? setReferralAddress(referralAddress) : setReferralAddress(zeroAddress)
     }, [referralAddress])
     console.log("referralAddress", referralAddress);
     return (
@@ -262,7 +262,7 @@ const Stacking = () => {
             <h2><span>MMIT’s</span> Staking</h2>
             <div >
 
-                <input placeholder='Referral Address' value={shortenAddress(referralAddress)} onChange={e => setReferralAddress(e.target.value)}></input>
+                <input placeholder='Referral Address'  onChange={e => setReferralAddress(e.target.value)}></input>
             </div>
 
             <div className='stack-card'>
